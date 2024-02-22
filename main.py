@@ -6,9 +6,18 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 25
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
+WORK_MIN = 1
+SHORT_BREAK_MIN = 1
+LONG_BREAK_MIN = 2
+reps = 0
+is_break_time = False
+
+
+def calc_time(num_of_min, sixty_sec=60):
+    global is_break_time
+    is_break_time = not is_break_time
+
+    return sixty_sec * num_of_min
 
 
 # ---------------------------- TIMER RESET ------------------------------- #
@@ -18,7 +27,21 @@ def reset_counter():
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 def start_countdown():
-    counter = 60 * 3
+    global reps, is_break_time
+
+    if is_break_time:
+        count_down_min = SHORT_BREAK_MIN
+        timer_label.config(text='Break', fg=PINK)
+        if reps == 4:
+            count_down_min = LONG_BREAK_MIN
+            timer_label.config(fg=RED)
+            reps = 0
+    else:
+        count_down_min = WORK_MIN
+        timer_label.config(text='WORK', fg=GREEN)
+        reps += 1
+
+    counter = calc_time(count_down_min)
     count_down(counter)
 
 
@@ -26,15 +49,13 @@ def start_countdown():
 def count_down(counter):
     min_count = math.floor(counter / 60)
     sec_count = counter % 60
-    # if min_count >= 0 and sec_count < 10:
-    #     sec_count = f'0{sec_count}'
-    # if min_count > 0 and sec_count == 0:
-    #     sec_count = '00'
     if sec_count < 10:
         sec_count = f'0{sec_count}'
     canvas.itemconfig(timer_text, text=f'{min_count}:{sec_count}')
     if counter > 0:
         window.after(1000, count_down, counter - 1)
+    else:
+        start_countdown()
 
 
 # ---------------------------- UI SETUP ------------------------------- #
