@@ -9,11 +9,23 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 
-# ---------------------------- TIMER RESET ------------------------------- # 
+
+# ---------------------------- TIMER RESET ------------------------------- #
+def reset_counter():
+    pass
+
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
+def start_countdown():
+    pass
 
-# ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
+
+# ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
+def count_down(counter):
+    canvas.itemconfig(timer_text, counter)
+    if counter > 0:
+        window.after(1000, count_down, counter - 1)
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
@@ -24,7 +36,19 @@ tomato_img = PhotoImage(file='./tomato.png')
 
 canvas = Canvas(width=200, height=224, bg=YELLOW, highlightthickness=0)
 canvas.create_image(100, 112, image=tomato_img)
-canvas.create_text(100, 130, text='00:00', fill='white', font=(FONT_NAME, 35, 'bold'))
-canvas.pack()
+timer_text = canvas.create_text(100, 130, text='00:00', fill='white', font=(FONT_NAME, 35, 'bold'))
+canvas.grid(column=1, row=1)
+
+timer_label = Label(text='Timer', fg=GREEN, bg=YELLOW, font=(FONT_NAME, 50))
+timer_label.grid(column=1, row=0)
+
+check_mark_label = Label(text="✓", bg=YELLOW, fg=GREEN)
+check_mark_label.grid(column=1, row=3)
+
+start_button = Button(text='Start', highlightthickness=0)
+start_button.grid(column=0, row=2)
+
+reset_button = Button(text='Reset', highlightthickness=0)
+reset_button.grid(column=2, row=2)
 
 window.mainloop()
