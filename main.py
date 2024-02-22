@@ -10,9 +10,12 @@ WORK_MIN = 1
 SHORT_BREAK_MIN = 1
 LONG_BREAK_MIN = 2
 reps = 0
+check_marks = ''
+timer = None
 is_break_time = False
 
 
+# --------------------------COMPUTE TIME, TOGGLE WORK/BREAK ------------------- #
 def calc_time(num_of_min, sixty_sec=60):
     global is_break_time
     is_break_time = not is_break_time
@@ -21,12 +24,18 @@ def calc_time(num_of_min, sixty_sec=60):
 
 
 # ---------------------------- TIMER RESET ------------------------------- #
-def reset_counter():
-    pass
+def reset_timer():
+    global check_marks, is_break_time
+    window.after_cancel(timer)
+    canvas.itemconfig(timer_text, text='00:00')
+    timer_label.config(text='Timer', fg=GREEN)
+    check_marks = ''
+    check_mark_label.config(text=check_marks)
+    is_break_time = False
 
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
-def start_countdown():
+def start_timer():
     global reps, is_break_time
 
     if is_break_time:
@@ -53,9 +62,14 @@ def count_down(counter):
         sec_count = f'0{sec_count}'
     canvas.itemconfig(timer_text, text=f'{min_count}:{sec_count}')
     if counter > 0:
-        window.after(1000, count_down, counter - 1)
+        global timer
+        timer = window.after(1000, count_down, counter - 1)
     else:
-        start_countdown()
+        if is_break_time and reps > 0:
+            global check_marks
+            check_marks += '✓'
+            check_mark_label.config(text=check_marks)
+        start_timer()
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -73,13 +87,13 @@ canvas.grid(column=1, row=1)
 timer_label = Label(text='Timer', fg=GREEN, bg=YELLOW, font=(FONT_NAME, 50))
 timer_label.grid(column=1, row=0)
 
-check_mark_label = Label(text="✓", bg=YELLOW, fg=GREEN)
+check_mark_label = Label(bg=YELLOW, fg=GREEN)
 check_mark_label.grid(column=1, row=3)
 
-start_button = Button(text='Start', highlightthickness=0, command=start_countdown)
+start_button = Button(text='Start', highlightthickness=0, command=start_timer)
 start_button.grid(column=0, row=2)
 
-reset_button = Button(text='Reset', highlightthickness=0)
+reset_button = Button(text='Reset', highlightthickness=0, command=reset_timer)
 reset_button.grid(column=2, row=2)
 
 window.mainloop()
